@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Forest Fire Detection Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+    body {
+        font-family: 'Poppins', sans-serif;
+        background: #0d0d0d;
+        color: #fff;
+        margin: 0;
+        padding: 0;
+        text-align: center;
+    }
+
+    .header {
+        padding: 20px;
+        font-size: 28px;
+        font-weight: 600;
+        background: linear-gradient(90deg, #ff512f, #dd2476);
+        color: white;
+        letter-spacing: 1px;
+    }
+
+    .container {
+        margin: 30px auto;
+        width: 90%;
+        max-width: 700px;
+    }
+
+    .card {
+        background: #1a1a1a;
+        border-radius: 15px;
+        padding: 25px;
+        margin: 20px 0;
+        box-shadow: 0 0 15px rgba(255, 80, 80, 0.4);
+        transition: 0.4s;
+    }
+
+    .card:hover {
+        transform: scale(1.02);
+    }
+
+    .value {
+        font-size: 42px;
+        font-weight: 600;
+        margin-top: 10px;
+    }
+
+    .label {
+        font-size: 20px;
+        opacity: 0.7;
+    }
+
+    .alert-box {
+        margin-top: 25px;
+        padding: 20px;
+        background: #330000;
+        color: #ff4c4c;
+        border: 2px solid #ff4c4c;
+        border-radius: 10px;
+        font-size: 24px;
+        font-weight: 600;
+        display: none;
+    }
+
+    .safe {
+        background: #002e00;
+        color: #00ff88;
+        border: 2px solid #00ff88;
+    }
+
+    .footer {
+        margin-top: 40px;
+        opacity: 0.6;
+        font-size: 14px;
+    }
+</style>
+
+</head>
+<body>
+
+<div class="header">🔥 Forest Fire Detection Dashboard</div>
+
+<div class="container">
+
+    <div class="card">
+        <div class="label">Smoke Level</div>
+        <div id="smokeValue" class="value">--</div>
+    </div>
+
+    <div class="card">
+        <div class="label">Temperature (°C)</div>
+        <div id="tempValue" class="value">--</div>
+    </div>
+
+    <div class="card">
+        <div class="label">Humidity (%)</div>
+        <div id="humiValue" class="value">--</div>
+    </div>
+
+    <div id="alertBox" class="alert-box">⚠ FIRE RISK DETECTED!</div>
+
+</div>
+
+<div class="footer">Created by Amey 🚀</div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+<script>
+  // Your Firebase Connection
+  const firebaseConfig = {
+    databaseURL: "https://forestfiredetection-23d1a-default-rtdb.firebaseio.com/"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  var db = firebase.database().ref("sensorData");
+
+  // Live Data Listener
+  db.on("value", function(snapshot) {
+      let data = snapshot.val();
+
+      document.getElementById("smokeValue").innerHTML = data.smoke;
+      document.getElementById("tempValue").innerHTML = data.temperature;
+      document.getElementById("humiValue").innerHTML = data.humidity;
+
+      let alertBox = document.getElementById("alertBox");
+
+      if (data.smoke > 110) {
+          alertBox.style.display = "block";
+          alertBox.classList.remove("safe");
+          alertBox.innerHTML = "🔥 SMOKE ALERT! POSSIBLE FIRE!";
+      } else {
+          alertBox.style.display = "block";
+          alertBox.classList.add("safe");
+          alertBox.innerHTML = "✔ Environment Safe";
+      }
+  });
+</script>
+
+</body>
+</html>
