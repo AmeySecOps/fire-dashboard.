@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>TrustSentinel – Live Monitoring</title>
+
+<!-- Google Font -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        font-family: 'Poppins', sans-serif;
+        background: radial-gradient(circle, #0a0f24, #000000);
+        color: #ffffff;
+        overflow-x: hidden;
+    }
+
+    h1 {
+        text-align: center;
+        margin-top: 30px;
+        font-size: 2.5rem;
+        font-weight: 600;
+        letter-spacing: 2px;
+        text-shadow: 0 0 20px #00d9ff;
+    }
+
+    .container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-top: 40px;
+        gap: 25px;
+    }
+
+    .card {
+        width: 300px;
+        height: 180px;
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 20px;
+        padding: 25px;
+        backdrop-filter: blur(12px);
+        box-shadow: 0 0 25px rgba(0, 255, 255, 0.2);
+        transition: 0.3s;
+        border: 1px solid rgba(0, 255, 255, 0.1);
+    }
+
+    .card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 0 35px rgba(0, 255, 255, 0.4);
+    }
+
+    .label {
+        font-size: 1.1rem;
+        opacity: 0.8;
+    }
+
+    .value {
+        margin-top: 20px;
+        font-size: 2rem;
+        font-weight: bold;
+        text-shadow: 0 0 12px #00f7ff;
+    }
+
+    .status-safe {
+        color: #22ff00;
+        text-shadow: 0 0 10px #22ff00;
+    }
+
+    .status-danger {
+        color: #ff0033;
+        text-shadow: 0 0 15px #ff0033;
+    }
+</style>
+</head>
+<body>
+
+<h1>🔥 TrustSentinel – Live Environment Monitor</h1>
+
+<div class="container">
+    <div class="card">
+        <div class="label">Smoke Level (MQ2):</div>
+        <div id="mq2Value" class="value">--</div>
+    </div>
+
+    <div class="card">
+        <div class="label">Temperature (°C):</div>
+        <div id="temperatureValue" class="value">--</div>
+    </div>
+
+    <div class="card">
+        <div class="label">Humidity (%):</div>
+        <div id="humidityValue" class="value">--</div>
+    </div>
+
+    <div class="card">
+        <div class="label">System Status:</div>
+        <div id="statusValue" class="value status-safe">--</div>
+    </div>
+</div>
+
+<!-- Firebase Realtime Database -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+<script>
+    // ----------------------
+    //  FIREBASE CONFIG
+    // ----------------------
+    const firebaseConfig = {
+        apiKey: "AIzaSyBTOpgg2j83GS2XFGAw9DsZL31Jr9fJc3c",
+        authDomain: "forestfiredetection-23d1a.firebaseapp.com",
+        databaseURL: "https://forestfiredetection-23d1a-default-rtdb.firebaseio.com",
+        projectId: "forestfiredetection-23d1a",
+        storageBucket: "forestfiredetection-23d1a.appspot.com",
+        messagingSenderId: "1082226236615",
+        appId: "1:1082226236615:web:0d2fe0df81ce364221dd00"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    // ----------------------
+    //  REALTIME LISTENER
+    // ----------------------
+    db.ref("sensorData").on("value", snapshot => {
+        let data = snapshot.val();
+        if (!data) return;
+
+        document.getElementById("mq2Value").innerHTML = data.mq2 ?? "--";
+        document.getElementById("temperatureValue").innerHTML = data.temperature ?? "--";
+        document.getElementById("humidityValue").innerHTML = data.humidity ?? "--";
+
+        const status = document.getElementById("statusValue");
+
+        if (data.alert === "SMOKE DETECTED") {
+            status.innerHTML = "⚠ DANGER";
+            status.className = "value status-danger";
+        } else {
+            status.innerHTML = "✔ SAFE";
+            status.className = "value status-safe";
+        }
+    });
+</script>
+
+</body>
+</html>
